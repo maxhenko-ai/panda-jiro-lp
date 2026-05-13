@@ -206,52 +206,91 @@
       display: flex; align-items: center; justify-content: center; gap: 6px;
     }
     .preview-toggle:hover { background: var(--green-pale); }
-    .preview-toggle .toggle-arrow { transition: transform 0.25s; display: inline-block; }
-    .preview-toggle.open .toggle-arrow { transform: rotate(180deg); }
-    .stickers-preview { display: none; margin-bottom: 12px; border-radius: 12px; overflow: hidden; }
-    .stickers-preview.open { display: block; }
-    .stickers-preview img {
-      width: 100%; border-radius: 12px;
-      cursor: zoom-in;
-      transition: opacity 0.2s;
-    }
-    .stickers-preview img:hover { opacity: 0.9; }
 
     /* ===== MODAL ===== */
     .modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 999;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.82);
       align-items: center; justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
       background: var(--white); border-radius: 20px;
-      max-width: 640px; width: 100%;
-      max-height: 90vh; overflow-y: auto;
-      padding: 24px;
-      position: relative;
+      width: 100%; max-width: 680px;
+      max-height: 90vh;
+      display: flex; flex-direction: column;
       animation: modalIn 0.2s ease;
+      overflow: hidden;
     }
     @keyframes modalIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .modal-title { font-size: 0.98rem; font-weight: 700; line-height: 1.4; }
     .modal-close {
-      position: absolute; top: 14px; right: 16px;
       background: #eee; border: none; border-radius: 50%;
-      width: 32px; height: 32px; font-size: 1.1rem;
+      width: 34px; height: 34px; font-size: 1rem;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
-      color: var(--gray);
+      color: var(--gray); flex-shrink: 0;
     }
     .modal-close:hover { background: #ddd; }
-    .modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; padding-right: 40px; line-height: 1.4; }
-    .modal-img { width: 100%; border-radius: 12px; }
+    .modal-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+      min-height: 200px;
+    }
+    .modal-loading {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 60px 0; gap: 16px;
+      color: var(--gray); font-size: 0.9rem;
+    }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid #eee;
+      border-top-color: var(--green); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sticker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media(max-width:400px){ .sticker-grid { grid-template-columns: repeat(3, 1fr); } }
+    .sticker-grid img {
+      width: 100%; aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 10px;
+      background: var(--green-pale);
+      padding: 6px;
+    }
+    .modal-fallback {
+      display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px 20px; text-align: center; gap: 16px;
+    }
+    .modal-fallback p { color: var(--gray); font-size: 0.9rem; line-height: 1.7; }
     .modal-store-btn {
-      display: block; text-align: center; margin-top: 18px;
+      display: inline-block; text-align: center;
       background: var(--green); color: var(--white);
-      border-radius: 50px; padding: 13px 0;
-      font-size: 0.92rem; font-weight: 700;
+      border-radius: 50px; padding: 14px 32px;
+      font-size: 0.95rem; font-weight: 700;
       text-decoration: none; transition: background 0.2s;
     }
     .modal-store-btn:hover { background: var(--green-light); }
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #eee;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .modal-footer a {
+      color: var(--green); font-size: 0.88rem; font-weight: 700;
+      text-decoration: none;
+    }
+    .modal-footer a:hover { text-decoration: underline; }
 
     /* ===== SCENES ===== */
     .scenes { background: var(--gray-light); }
@@ -393,14 +432,6 @@
             <span class="card-tag">📍 報告</span>
             <span class="card-tag">日常</span>
           </div>
-          <button class="preview-toggle" onclick="togglePreview(this)">
-            🔍 全スタンプを見る <span class="toggle-arrow">▼</span>
-          </button>
-          <div class="stickers-preview">
-            <img src="https://stickershop.line-scdn.net/stickershop/v1/product/33430084/LINEStorePC/stickers.png"
-                 alt="全スタンプ一覧" loading="lazy"
-                 onclick="openModal('ジローのパンダ毎日報告スタンプ 全スタンプ一覧', this.src, 'https://line.me/S/sticker/33430084')">
-          </div>
           <a class="card-btn" href="https://line.me/S/sticker/33430084" target="_blank" rel="noopener">LINE STOREで見る</a>
         </div>
       </div>
@@ -417,14 +448,6 @@
           <div class="card-tags">
             <span class="card-tag">💬 日常会話</span>
             <span class="card-tag">あいさつ</span>
-          </div>
-          <button class="preview-toggle" onclick="togglePreview(this)">
-            🔍 全スタンプを見る <span class="toggle-arrow">▼</span>
-          </button>
-          <div class="stickers-preview">
-            <img src="https://stickershop.line-scdn.net/stickershop/v1/product/33580192/LINEStorePC/stickers.png"
-                 alt="全スタンプ一覧" loading="lazy"
-                 onclick="openModal('ジローのパンダ気持ち伝えるスタンプ 全スタンプ一覧', this.src, 'https://line.me/S/sticker/33580192')">
           </div>
           <a class="card-btn" href="https://line.me/S/sticker/33580192" target="_blank" rel="noopener">LINE STOREで見る</a>
         </div>
@@ -443,14 +466,6 @@
             <span class="card-tag">🗣️ 関西弁</span>
             <span class="card-tag">大阪</span>
           </div>
-          <button class="preview-toggle" onclick="togglePreview(this)">
-            🔍 全スタンプを見る <span class="toggle-arrow">▼</span>
-          </button>
-          <div class="stickers-preview">
-            <img src="https://stickershop.line-scdn.net/stickershop/v1/product/33585242/LINEStorePC/stickers.png"
-                 alt="全スタンプ一覧" loading="lazy"
-                 onclick="openModal('ジローのパンダ関西弁スタンプ 全スタンプ一覧', this.src, 'https://line.me/S/sticker/33585242')">
-          </div>
           <a class="card-btn" href="https://line.me/S/sticker/33585242" target="_blank" rel="noopener">LINE STOREで見る</a>
         </div>
       </div>
@@ -468,14 +483,6 @@
             <span class="card-tag">💕 愛情</span>
             <span class="card-tag">気持ち</span>
           </div>
-          <button class="preview-toggle" onclick="togglePreview(this)">
-            🔍 全スタンプを見る <span class="toggle-arrow">▼</span>
-          </button>
-          <div class="stickers-preview">
-            <img src="https://stickershop.line-scdn.net/stickershop/v1/product/33864296/LINEStorePC/stickers.png"
-                 alt="全スタンプ一覧" loading="lazy"
-                 onclick="openModal('ジローのパンダ愛情伝えるスタンプ 全スタンプ一覧', this.src, 'https://line.me/S/sticker/33864296')">
-          </div>
           <a class="card-btn" href="https://line.me/S/sticker/33864296" target="_blank" rel="noopener">LINE STOREで見る</a>
         </div>
       </div>
@@ -492,14 +499,6 @@
           <div class="card-tags">
             <span class="card-tag">⛳️ ゴルフ</span>
             <span class="card-tag">16種類</span>
-          </div>
-          <button class="preview-toggle" onclick="togglePreview(this)">
-            🔍 全スタンプを見る <span class="toggle-arrow">▼</span>
-          </button>
-          <div class="stickers-preview">
-            <img src="https://stickershop.line-scdn.net/stickershop/v1/product/34003230/LINEStorePC/stickers.png"
-                 alt="全スタンプ一覧" loading="lazy"
-                 onclick="openModal('ジローのパンダゴルフスタンプ 全スタンプ一覧', this.src, 'https://line.me/S/sticker/34003230')">
           </div>
           <a class="card-btn" href="https://line.me/S/sticker/34003230" target="_blank" rel="noopener">LINE STOREで見る</a>
         </div>
@@ -588,10 +587,24 @@
 <!-- ===== MODAL ===== -->
 <div class="modal-overlay" id="modal" onclick="closeModalOnBg(event)">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-title" id="modal-title"></div>
-    <img class="modal-img" id="modal-img" src="" alt="全スタンプ一覧">
-    <a class="modal-store-btn" id="modal-store-btn" href="#" target="_blank" rel="noopener">LINE STOREで購入する →</a>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="modal-loading" id="modal-loading">
+        <div class="spinner"></div>
+        <p>スタンプを読み込み中…</p>
+      </div>
+      <div class="sticker-grid" id="sticker-grid"></div>
+      <div class="modal-fallback" id="modal-fallback">
+        <p>スタンプの読み込みに失敗しました。<br>LINE STOREで全スタンプをご確認ください。</p>
+        <a class="modal-store-btn" id="modal-store-btn" href="#" target="_blank" rel="noopener">LINE STOREで全スタンプを見る →</a>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a id="modal-footer-link" href="#" target="_blank" rel="noopener">LINE STOREで購入する →</a>
+    </div>
   </div>
 </div>
 
@@ -605,7 +618,7 @@
 </footer>
 
 <script>
-  // FAQ accordion
+  // ===== FAQ accordion =====
   document.querySelectorAll('.faq-q').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
@@ -615,23 +628,77 @@
     });
   });
 
-  // Sticker preview toggle
-  function togglePreview(btn) {
-    const preview = btn.nextElementSibling;
-    const isOpen = preview.classList.contains('open');
-    preview.classList.toggle('open', !isOpen);
-    btn.classList.toggle('open', !isOpen);
-    btn.childNodes[0].textContent = isOpen ? '🔍 全スタンプを見る ' : '🔍 閉じる ';
-  }
+  // ===== 全スタンプ表示モーダル =====
+  let currentStoreUrl = '';
 
-  // Modal
-  function openModal(title, imgSrc, storeUrl) {
+  async function openModal(title, storePageUrl, storeUrl) {
+    currentStoreUrl = storeUrl;
     document.getElementById('modal-title').textContent = title;
-    document.getElementById('modal-img').src = imgSrc;
+    document.getElementById('modal-footer-link').href = storeUrl;
     document.getElementById('modal-store-btn').href = storeUrl;
+
+    // 表示リセット
+    document.getElementById('modal-loading').style.display = 'flex';
+    document.getElementById('sticker-grid').innerHTML = '';
+    document.getElementById('sticker-grid').style.display = 'none';
+    document.getElementById('modal-fallback').style.display = 'none';
+
     document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+
+    // productIDをURLから抽出
+    const match = storePageUrl.match(/product\/(\d+)/);
+    if (!match) { showFallback(); return; }
+    const productId = match[1];
+
+    // スタンプIDを取得して表示
+    const stickerIds = await fetchStickerIds(productId);
+    if (stickerIds && stickerIds.length > 0) {
+      renderStickerGrid(stickerIds);
+    } else {
+      showFallback();
+    }
   }
+
+  async function fetchStickerIds(productId) {
+    const metaUrl = `https://stickershop.line-scdn.net/products/0/${productId}/LINEStorePC/productInfo.meta`;
+    const proxies = [
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(metaUrl)}`,
+      `https://corsproxy.io/?${encodeURIComponent(metaUrl)}`
+    ];
+    for (const proxyUrl of proxies) {
+      try {
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data && data.stickers && data.stickers.length > 0) {
+          return data.stickers.map(s => s.id);
+        }
+      } catch(e) { continue; }
+    }
+    return null;
+  }
+
+  function renderStickerGrid(ids) {
+    const grid = document.getElementById('sticker-grid');
+    grid.innerHTML = '';
+    ids.forEach(id => {
+      const img = document.createElement('img');
+      img.src = `https://stickershop.line-scdn.net/stickershop/v1/sticker/${id}/android/sticker.png`;
+      img.alt = `スタンプ ${id}`;
+      img.loading = 'lazy';
+      img.onerror = () => { img.style.display = 'none'; };
+      grid.appendChild(img);
+    });
+    document.getElementById('modal-loading').style.display = 'none';
+    grid.style.display = 'grid';
+  }
+
+  function showFallback() {
+    document.getElementById('modal-loading').style.display = 'none';
+    document.getElementById('modal-fallback').style.display = 'flex';
+  }
+
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
     document.body.style.overflow = '';
